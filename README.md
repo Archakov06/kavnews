@@ -10,4 +10,4 @@
 
 #### Ссылки:
 - Группу ВК: https://vk.com/archakov_im
-- Мой сайт: https://archakov.im/
+- Мой сайт: https://archakov.im
