@@ -1,0 +1,26 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Helvetica, sans-serif, Tahoma, Arial;
+}
+
+.post {
+  display: -webkit-flex;
+  display: -ms-flex;
+  display: flex;
+  margin: 30px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  height: 250px;
+}
+
+.post__image {
+  flex: 0.3;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+.post__info {
+  flex: 1;
+  padding: 15px 30px;
+}
