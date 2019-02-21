@@ -3,57 +3,72 @@ import Post from './components/Post';
 import axios from 'axios';
 import { connect } from 'react-redux';
 
-class App extends Component {
-  constructor(props) {
-    super(props);
-  }
+import { postsActions } from './actions/posts';
+import { appActions } from './actions/app';
 
-  fetchPosts() {
+class App extends Component {
+  state = {
+    regions: {
+      ING: 'Последние новости',
+      DAG: 'Дагестан',
+      CHE: 'Чечня',
+    },
+  };
+
+  fetchPosts = () => {
     const { setPosts } = this.props;
     setPosts([]);
-    axios
-      .get('http://59e3a8a10573cf0012f4d1ce.mockapi.io/posts')
-      .then(({ data }) => {
-        setPosts(data);
-      });
-  }
+    axios.get('http://localhost:3333/posts').then(({ data }) => {
+      setPosts(data);
+    });
+  };
 
   render() {
-    const { posts } = this.props;
-    const { items } = posts;
+    const {
+      posts: { items },
+      app: { region },
+    } = this.props;
     return (
-      <div>
-        <div>
-          <button onClick={this.fetchPosts.bind(this)}>Получить записи</button>
-          <h3>Регион: {this.props.regions.region}</h3>
-          <ul>
-            <li>
-              <button onClick={() => this.props.changeRegion('ING')}>
+      <div className="container">
+        <div className="d-flex align-items-center p-3 my-3 text-white-50 bg-purple rounded shadow-sm">
+          <div className="lh-100 header">
+            <h5 className="mb-0 text-white lh-100">Последние новости</h5>
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+              <label
+                onChange={this.props.setRegion.bind(this, 'ING')}
+                class={`btn btn-light ${region === 'ING' ? 'active' : ''}`}>
+                <input type="radio" name="options" id="option1" autocomplete="off" />
                 Ингушетия
-              </button>
-            </li>
-            <li>
-              <button onClick={() => this.props.changeRegion('CHE')}>
-                Чечня
-              </button>
-            </li>
-            <li>
-              <button onClick={() => this.props.changeRegion('DAG')}>
-                Дагестан
-              </button>
-            </li>
-          </ul>
+              </label>
+              <label
+                onChange={this.props.setRegion.bind(this, 'CHE')}
+                class={`btn btn-light ${region === 'CHE' ? 'active' : ''}`}>
+                <input type="radio" name="options" id="option2" autocomplete="off" /> Чечня
+              </label>
+              <label
+                onChange={this.props.setRegion.bind(this, 'DAG')}
+                class={`btn btn-light ${region === 'DAG' ? 'active' : ''}`}>
+                <input type="radio" name="options" id="option3" autocomplete="off" /> Дагестан
+              </label>
+            </div>
+          </div>
         </div>
+        <div className="my-3 p-3 bg-white rounded shadow-sm">
+          <h6 className="border-bottom border-gray pb-2 mb-0">Последние новости</h6>
+          <div className="media text-muted pt-3">
+            <p className="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
+              <strong className="d-block text-gray-dark">@username</strong>
+              Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus
+              commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.
+            </p>
+          </div>
+        </div>
+
         {!items.length ? (
           <span>Loading...</span>
         ) : (
           items.map(({ title, description, image }, key) => (
-            <Post
-              key={key}
-              title={title}
-              description={description}
-              image={image}
-            />
+            <Post key={key} title={title} description={description} image={image} />
           ))
         )}
       </div>
@@ -61,23 +76,7 @@ class App extends Component {
   }
 }
 
-const state = props => {
-  return {
-    ...props,
-  };
-};
-
-const actions = dispatch => ({
-  setPosts: data =>
-    dispatch({
-      type: 'SET_POSTS',
-      payload: data,
-    }),
-  changeRegion: name =>
-    dispatch({
-      type: 'CHANGE_REGION',
-      payload: name,
-    }),
-});
-
-export default connect(state, actions)(App);
+export default connect(
+  state => state,
+  { ...appActions, ...postsActions },
+)(App);
