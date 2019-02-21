@@ -1,28 +1,55 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react";
+import Post from "./components/Post";
+import axios from "axios";
+import { connect } from "react-redux";
+
+import { postsActions } from "./actions/posts";
+import { appActions } from "./actions/app";
+
+import { Header } from "./components";
 
 class App extends Component {
+  state = {
+    regions: {
+      ING: "Последние новости",
+      DAG: "Дагестан",
+      CHE: "Чечня"
+    }
+  };
+
+  fetchPosts = () => {
+    const { setPosts } = this.props;
+    setPosts([]);
+    axios.get("http://localhost:3333/posts").then(({ data }) => {
+      setPosts(data);
+    });
+  };
+
   render() {
+    const {
+      posts: { items }
+    } = this.props;
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
+      <div className="container">
+        <Header />
+        {!items.length ? (
+          <span>Loading...</span>
+        ) : (
+          items.map(({ title, description, image }, key) => (
+            <Post
+              key={key}
+              title={title}
+              description={description}
+              image={image}
+            />
+          ))
+        )}
       </div>
     );
   }
 }
 
-export default App;
+export default connect(
+  state => state,
+  { ...appActions, ...postsActions }
+)(App);
